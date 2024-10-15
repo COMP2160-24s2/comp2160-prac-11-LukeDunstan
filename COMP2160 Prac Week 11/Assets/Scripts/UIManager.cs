@@ -28,6 +28,13 @@ public class UIManager : MonoBehaviour
     }
 #endregion 
 
+#region Camera
+    private Camera main;
+#endregion
+
+private string wallLayer = "Walls";
+private LayerMask ground;
+
 #region Actions
     private Actions actions;
     private InputAction mouseAction;
@@ -57,6 +64,9 @@ public class UIManager : MonoBehaviour
 
         Cursor.visible = false;
         target.gameObject.SetActive(false);
+
+        main = Camera.main;
+        ground = LayerMask.GetMask(wallLayer);
     }
 
     void OnEnable()
@@ -68,6 +78,8 @@ public class UIManager : MonoBehaviour
     {
         actions.mouse.Disable();
     }
+
+    
 #endregion Init
 
 #region Update
@@ -80,9 +92,10 @@ public class UIManager : MonoBehaviour
     private void MoveCrosshair() 
     {
         Vector2 mousePos = mouseAction.ReadValue<Vector2>();
-
-        // FIXME: Move the crosshair position to the mouse position (in world coordinates)
-        // crosshair.position = ...;
+        RaycastHit hit;
+        if (Physics.Raycast(main.ScreenPointToRay(mousePos), out hit, Mathf.Infinity, ground)){
+            crosshair.position = hit.point;
+        }
     }
 
     private void SelectTarget()
